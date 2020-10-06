@@ -10,8 +10,8 @@ import torch.nn as nn
 # --------------------------------------
 
 def loadparams():
-    W = [numpy.loadtxt('../params/l%d-W.txt'%l) for l in range(1,4)]
-    B = [numpy.loadtxt('../params/l%d-B.txt'%l) for l in range(1,4)]
+    W = [numpy.loadtxt('./params/l%d-W.txt'%l) for l in range(1,4)]
+    B = [numpy.loadtxt('./params/l%d-B.txt'%l) for l in range(1,4)]
     return W,B
 
 # --------------------------------------
@@ -19,8 +19,8 @@ def loadparams():
 # --------------------------------------
 
 def loaddata():
-    X = numpy.loadtxt('../data/X.txt')
-    T = numpy.loadtxt('../data/T.txt')
+    X = numpy.loadtxt('./data/X.txt')
+    T = numpy.loadtxt('./data/T.txt')
     return X,T
 
 # --------------------------------------
