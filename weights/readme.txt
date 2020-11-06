@@ -1,0 +1,1 @@
+VGG16 weights: https://www.kaggle.com/keras/vgg16
