@@ -1,3 +1,11 @@
+import os
+import sys
+import random
+import numpy as np
+from matplotlib import pyplot as plt
+import innvestigate
+
+
 weights21= [i / 200 for i in range(1, 200)]
 weights22= [1 + i / 200 for i in range(1, 200)]
 #weights22 = [-1 - (i / 140) for i in range(1, 140)]
