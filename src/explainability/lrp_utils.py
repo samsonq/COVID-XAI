@@ -1,32 +1,8 @@
-# Begin: Python 2/3 compatibility header small
-# Get Python 3 functionality:
-from __future__ import\
-    absolute_import, print_function, division, unicode_literals
-from future.utils import raise_with_traceback, raise_from
-# catch exception with: except Exception as e
-from builtins import range, map, zip, filter
-from io import open
-import six
-# End: Python 2/3 compatability header small
-
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 import PIL.Image
 import shutil
-
-
-###############################################################################
-# Download utilities
-###############################################################################
-
-
-def download(url, filename):
-    if not os.path.exists(filename):
-        print("Download: %s ---> %s" % (url, filename))
-        response = six.moves.urllib.request.urlopen(url)
-        with open(filename, 'wb') as out_file:
-            shutil.copyfileobj(response, out_file)
 
 
 ###############################################################################
