@@ -13,12 +13,14 @@ from keras.applications.inception_v3 import InceptionV3
 from keras.applications.resnet50 import ResNet50
 from keras import preprocessing
 from tensorflow.python.client import device_lib
-from config import LABELS, IMG_SIZE, GRAYSCALE
+from sklearn.utils import class_weight
+from config import *
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1"
 
 
+# TODO: refactor config.py into yaml file so no need to import values?
 class PneumoniaModel:
     """
 
@@ -37,7 +39,7 @@ class PneumoniaModel:
         K.clear_session()
         dim = 1 if GRAYSCALE else 3
         if self.architecture == "VGG16":
-            base_model = VGG16(weights='./weights/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5',
+            base_model = VGG16(weights='./models/weights/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5',
                                include_top=False,
                                input_shape=(IMG_SIZE, IMG_SIZE, dim))
         elif self.architecture == "ResNet18":
@@ -45,11 +47,14 @@ class PneumoniaModel:
             base_model.add(ResNet50(include_top=False,
                                     pooling='avg',
                                     input_shape=(IMG_SIZE, IMG_SIZE, dim),
-                                    weights='./weights/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5'))
+                                    weights='./models/weights/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5'))
         x = base_model.output
         x = Flatten()(x)
         x = Dense(len(LABELS), activation='softmax', name="concept")(x)
-        return Model(inputs=base_model.input, outputs=x)
+        model = Model(inputs=base_model.input, outputs=x)
+        for layer in model.layers[0:19]:
+            layer.trainable = False
+        return model
 
     @staticmethod
     def w_categorical_crossentropy(y_true, y_pred, weights):
@@ -68,3 +73,37 @@ class PneumoniaModel:
         for c_p, c_t in product(range(nb_cl), range(nb_cl)):
             final_mask += (weights[c_t, c_p] * y_pred_max_mat[:, c_p] * y_true[:, c_t])
         return K.categorical_crossentropy(y_pred, y_true) * final_mask
+
+    @staticmethod
+    def __callbacks():
+        callbacks = []
+        return callbacks
+
+    def fit(self, X_train, y_train, X_valid=None, y_valid=None, epochs=EPOCHS, batch_size=BATCH_SIZE):
+        ohe_y_train = keras.utils.to_categorical(y_train, len(LABELS))
+        ohe_y_val = keras.utils.to_categorical(y_valid, len(LABELS))
+
+        w_array = np.ones((2, 2))
+        w_array[1, 0] = 30  # penalizing false negative
+        w_array[0, 1] = 1  # penalizing false positive
+
+        spec_loss = lambda y_true, y_pred: self.w_categorical_crossentropy(y_true, y_pred, weights=w_array)
+
+        y_labels = np.argmax(ohe_y_train, axis=1)
+        classweight = class_weight.compute_class_weight("balanced", np.unique(y_labels), y_labels)
+
+        optimizer = Adam(lr=0.0001)
+
+        self.model.compile(loss="categorical_crossentropy",  # loss=spec_loss,
+                           optimizer=optimizer,
+                           metrics=["accuracy"])
+
+        history = self.model.fit(x=X_train, y=ohe_y_train,
+                                 class_weight=classweight,
+                                 validation_data=(X_valid, ohe_y_val),
+                                 shuffle=True,
+                                 callbacks=self.__callbacks(),
+                                 batch_size=batch_size,
+                                 epochs=epochs,
+                                 verbose=1)
+        return history

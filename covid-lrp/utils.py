@@ -1,10 +1,44 @@
 import os
 import random
+import shutil
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 import seaborn as sns
-from config import LABELS
+from config import LABELS, TRAIN_DATA_PATH, VAL_DATA_PATH, TEST_DATA_PATH
+
+
+def print_class_distribution(train_path=TRAIN_DATA_PATH, val_path=VAL_DATA_PATH, test_path=TEST_DATA_PATH):
+    """
+
+    :param train_path:
+    :param val_path:
+    :param test_path:
+    """
+    for dataset, name in {train_path: "Training", val_path: "Validation", test_path: "Test"}.items():
+        for label in LABELS:
+            print("{} {} instances:".format(name, label), len(os.listdir(os.path.join(dataset, label))))
+    return
+
+
+def train_val_split(train_path=TRAIN_DATA_PATH, val_path=VAL_DATA_PATH, split_size=0.2):
+    """
+
+    :param train_path:
+    :param val_path:
+    :param split_size:
+    """
+    for label in LABELS:
+        train_size = len(os.listdir(os.path.join(train_path, label)))
+        val_size = len(os.listdir(os.path.join(val_path, label)))
+        move_size = split_size * (train_size + val_size)
+        if val_size > move_size:
+            print("Current validation set too large for {}.".format(label))
+            continue
+        for i in random.sample(os.listdir(os.path.join(train_path, label)), move_size - val_size):
+            shutil.move(os.path.join(train_path, label, i), os.path.join(val_path, label, i))
+    print_class_distribution(train_path=train_path, val_path=val_path)
+    return
 
 
 def visualize_distribution(data):
