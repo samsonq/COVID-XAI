@@ -23,23 +23,33 @@ class PneumoniaModel:
     """
 
     """
-    def __init__(self):
+    def __init__(self, architecture="VGG16"):
         print("GPU in use:", tf.test.is_gpu_available())
         device_lib.list_local_devices()
 
-        K.clear_session()
-
-        dim = 1 if GRAYSCALE else 3
-        base_model = VGG16(weights='./weights/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5', include_top=False,
-                           input_shape=(IMG_SIZE, IMG_SIZE, dim))
-        x = base_model.output
-        x = Flatten()(x)
-        x = Dense(len(LABELS), activation='softmax', name="concept")(x)
-
-        self.model = Model(inputs=base_model.input, outputs=x)
+        self.architecture = architecture
+        self.model = self.__build_model()
 
     def __str__(self):
         return self.model.summary()
+
+    def __build_model(self):
+        K.clear_session()
+        dim = 1 if GRAYSCALE else 3
+        if self.architecture == "VGG16":
+            base_model = VGG16(weights='./weights/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5',
+                               include_top=False,
+                               input_shape=(IMG_SIZE, IMG_SIZE, dim))
+        elif self.architecture == "ResNet18":
+            base_model = Sequential()
+            base_model.add(ResNet50(include_top=False,
+                                    pooling='avg',
+                                    input_shape=(IMG_SIZE, IMG_SIZE, dim),
+                                    weights='./weights/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5'))
+        x = base_model.output
+        x = Flatten()(x)
+        x = Dense(len(LABELS), activation='softmax', name="concept")(x)
+        return Model(inputs=base_model.input, outputs=x)
 
     @staticmethod
     def w_categorical_crossentropy(y_true, y_pred, weights):
