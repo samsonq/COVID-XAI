@@ -22,7 +22,7 @@ except Exception as e:
     install_reqs = []
 
 setup(
-    name="covid-lrp",
+    name="covidlrp",
     version="0.1.0",
     url="https://github.com/samsonq/COVID-LRP",
     description="Using layer-wise relevance propagation and other explainability algorithms on CNN architectures to identify and explain regions of bacteria in COVID-19 chest X-rays.",
