@@ -2,6 +2,8 @@ import os
 import numpy as np
 import cv2
 from tqdm import tqdm
+from keras.utils import to_categorical
+from keras.preprocessing.image import ImageDataGenerator
 from config import LABELS, IMG_SIZE, GRAYSCALE, TRAIN_DATA_PATH, VAL_DATA_PATH, TEST_DATA_PATH
 from utils import create_preprocessing_f
 
@@ -17,6 +19,8 @@ class DataLoader:
         self.gray = gray
         self.num_classes = len(labels)
         self.label_to_class_name = {j: i for i, j in enumerate(labels)}
+        self.data = None
+        self.preprocess = None
 
     def load_data(self, data_dir):
         """
@@ -96,12 +100,36 @@ class DataLoader:
         x_train, y_train, x_val, y_val, x_test, y_test = self.preprocessing(train, val, test)
         preprocess, revert_preprocessing = create_preprocessing_f(x_train)
 
+        preprocess_test, revert_preprocessing_test = create_preprocessing_f(x_test)
+
+        # One-hot Encoding
+        y_train = to_categorical(y_train, len(LABELS))
+        y_val = to_categorical(y_val, len(LABELS))
+        y_test = to_categorical(y_test, len(LABELS))
+
         data = (
             preprocess(x_train), y_train,
-            preprocess(x_val), y_val
+            preprocess(x_val), y_val,
+            preprocess_test(x_test), y_test
         )
+        self.data = data
+        self.preprocess = [revert_preprocessing, revert_preprocessing_test]
 
-        preprocess_test, revert_preprocessing_test = create_preprocessing_f(x_test)
-        x_test = preprocess_test(x_test)
+        return data, [revert_preprocessing, revert_preprocessing_test]
 
-        return data, revert_preprocessing, x_test, revert_preprocessing_test, y_test
+    def data_aug(self):
+        datagen = ImageDataGenerator(
+            featurewise_center=False,  # set input mean to 0 over the dataset
+            samplewise_center=False,  # set each sample mean to 0
+            featurewise_std_normalization=False,  # divide inputs by std of the dataset
+            samplewise_std_normalization=False,  # divide each input by its std
+            zca_whitening=False,  # apply ZCA whitening
+            rotation_range=30,  # randomly rotate images in the range (degrees, 0 to 180)
+            zoom_range=0.2,  # Randomly zoom image
+            width_shift_range=0.1,  # randomly shift images horizontally (fraction of total width)
+            height_shift_range=0.1,  # randomly shift images vertically (fraction of total height)
+            horizontal_flip=False,  # randomly flip images
+            vertical_flip=False)  # randomly flip images
+
+        datagen.fit(self.data[0])
+        return datagen

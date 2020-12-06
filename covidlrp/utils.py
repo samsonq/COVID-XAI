@@ -4,42 +4,48 @@ import shutil
 import numpy as np
 import cv2
 import yaml
+import zipfile as zf
 from matplotlib import pyplot as plt
 import seaborn as sns
+sns.set_style("darkgrid")
 from config import LABELS, TRAIN_DATA_PATH, VAL_DATA_PATH, TEST_DATA_PATH
 
 
-def load_config(path):
+def load_zip(zip_path):
     """
-    Load the configuration from config.yaml.
+    Load data through zip file.
+    :param zip_path: path to data zip file
     """
-    return yaml.load(open(path, 'r'), Loader=yaml.SafeLoader)
+    if not os.path.exists("../data"):
+        files = zf.ZipFile(zip_path, 'r')
+        files.extractall(".")
+        files.close()
+    return
 
 
-config = load_config("./config.yaml")
-
-
-def print_class_distribution(train_path=TRAIN_DATA_PATH, val_path=VAL_DATA_PATH, test_path=TEST_DATA_PATH):
+def print_class_distribution(train_path=TRAIN_DATA_PATH, val_path=VAL_DATA_PATH, test_path=TEST_DATA_PATH, labels=LABELS):
     """
-
-    :param train_path:
-    :param val_path:
-    :param test_path:
+    Print distribution of class labels in data.
+    :param train_path: training data path
+    :param val_path: validation data path
+    :param test_path: testing data path
+    :param labels: class labels
     """
     for dataset, name in {train_path: "Training", val_path: "Validation", test_path: "Test"}.items():
-        for label in LABELS:
+        for label in labels:
             print("{} {} instances:".format(name, label), len(os.listdir(os.path.join(dataset, label))))
     return
 
 
-def train_val_split(train_path=TRAIN_DATA_PATH, val_path=VAL_DATA_PATH, split_size=0.2):
+def train_val_split(train_path=TRAIN_DATA_PATH, val_path=VAL_DATA_PATH, labels=LABELS, split_size=0.2):
     """
-
-    :param train_path:
-    :param val_path:
-    :param split_size:
+    Split data into training and validation set among the class labels.
+    :param train_path: training data path
+    :param val_path: validation data path
+    :param labels: class labels
+    :param split_size: size of validation split
     """
-    for label in LABELS:
+    for label in labels:
         train_size = len(os.listdir(os.path.join(train_path, label)))
         val_size = len(os.listdir(os.path.join(val_path, label)))
         move_size = split_size * (train_size + val_size)
@@ -54,9 +60,8 @@ def train_val_split(train_path=TRAIN_DATA_PATH, val_path=VAL_DATA_PATH, split_si
 
 def visualize_distribution(data):
     """
-
-    :param data:
-    :return:
+    Visualize the distribution of images among the class labels.
+    :param data: image data
     """
     l = []
     for i in data:
@@ -67,18 +72,16 @@ def visualize_distribution(data):
         else:
             l.append("Normal")
 
-    sns.set_style("darkgrid")
     sns.countplot(l)
     plt.show()
 
 
 def visualize_samples(data, labels=LABELS, samples=1):
     """
-
-    :param data:
-    :param labels:
-    :param samples:
-    :return:
+    Visualize sample images within the dataset.
+    :param data: image data
+    :param labels: class labels
+    :param samples: number of samples
     """
     for _ in range(samples):
         x = random.randint(0, data.size-1)
@@ -91,9 +94,9 @@ def create_preprocessing_f(X, input_range=[0, 1]):
     """
     Generically shifts data from interval [a, b] to interval [c, d].
     Assumes that theoretical min and max values are populated.
-    :param X:
-    :param input_range:
-    :return:
+    :param X: feature data
+    :param input_range: rescale range
+    :return: preprocessing and revert preprocessing functions for data
     """
     if len(input_range) != 2:
         raise ValueError(

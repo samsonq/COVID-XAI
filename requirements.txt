@@ -24,3 +24,4 @@ pip~=10.0.1
 setuptools~=45.0.0
 PyYAML~=5.3
 sklearn~=0.0
+mlxtend~=0.18.0
