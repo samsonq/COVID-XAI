@@ -27,6 +27,9 @@ COVID-LRP
 └── LICENSE
 ```
 
+## Outputs
+![LRP](./outputs/LRP.png)
+
 ### TODO
 
 Make images larger (512)
