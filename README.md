@@ -28,7 +28,6 @@ COVID-LRP
 ```
 
 ## Outputs
-![LRP](./outputs/LRP.png)
 
 ### TODO
 
