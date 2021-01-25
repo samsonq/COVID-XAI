@@ -130,3 +130,6 @@ dmypy.json
 .DS_STORE
 .idea/*
 .idea
+*.hdf5
+*.hdf5
+models/weights/unet_weights.hdf5
