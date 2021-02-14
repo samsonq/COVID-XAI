@@ -3,11 +3,13 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.layers import *
 
+
 class Unet:
     def __init__(self, verbose=False):
         inputs, outputs = self.get_layers()
         self.model = tf.keras.Model(inputs = inputs, outputs = outputs)
-        if verbose: print(self.model.summary())
+        if verbose:
+            print(self.model.summary())
 
     def get_layers(self):
         Kernel = (3,3)

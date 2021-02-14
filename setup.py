@@ -28,5 +28,5 @@ setup(
     description="Using layer-wise relevance propagation and other explainability algorithms on CNN architectures to identify and explain regions of bacteria in COVID-19 chest X-rays.",
     install_requires=install_reqs,
     python_requires=">=3.4",
-    keywords="lrp computer-vision explainable-ai lime deconvolution covid-19 pneumonia-detection"
+    keywords="computer-vision explainable-ai lime lrp grad-cam covid-19 pneumonia-detection"
 )
