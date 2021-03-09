@@ -25,7 +25,7 @@ COVID-LRP
 ├── .gitignore
 ├── README.md
 ├── data
-├── covidlrp
+├── covidxai
 ├── references
 ├── requirements.txt
 └── LICENSE
