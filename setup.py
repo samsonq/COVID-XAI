@@ -37,11 +37,6 @@ setup(
     long_description=README,
     long_description_content_type="text/markdown",
     install_requires=install_reqs,
-    entry_points={
-        "console_scripts": [
-            "realpython=reader.__main__:main",
-        ]
-    },
-    python_requires=">=3.4",
+    python_requires=">=3.6",
     keywords="computer-vision explainable-ai lime lrp grad-cam covid-19 pneumonia-detection"
 )
