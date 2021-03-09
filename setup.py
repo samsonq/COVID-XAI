@@ -2,6 +2,14 @@ from setuptools import setup, find_packages
 import pip
 import logging
 import pkg_resources
+import pathlib
+from setuptools import setup
+
+# The directory containing this file
+HERE = pathlib.Path(__file__).parent
+
+# The text of the README file
+README = (HERE / "README.md").read_text()
 
 
 def _parse_requirements(file_path):
@@ -25,8 +33,15 @@ setup(
     name="covidxai",
     version="0.1.0",
     url="https://github.com/samsonq/COVID-LRP",
-    description="Using layer-wise relevance propagation and other explainability algorithms on CNN architectures to identify and explain regions of bacteria in COVID-19 chest X-rays.",
+    description="Using XAI algorithms on Computer Vision models to explain predictions.",
+    long_description=README,
+    long_description_content_type="text/markdown",
     install_requires=install_reqs,
+    entry_points={
+        "console_scripts": [
+            "realpython=reader.__main__:main",
+        ]
+    },
     python_requires=">=3.4",
     keywords="computer-vision explainable-ai lime lrp grad-cam covid-19 pneumonia-detection"
 )
