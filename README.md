@@ -32,7 +32,7 @@ COVID-LRP
 ```
 
 ## Usage Instructions
-* This project is published on PyPI[https://pypi.org/project/covidxai/]. To install package, run:
+* This project is published on [PyPI](https://pypi.org/project/covidxai/). To install package, run:
 
   ```
   pip install covidxai
