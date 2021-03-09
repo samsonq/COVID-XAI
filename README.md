@@ -32,11 +32,10 @@ COVID-LRP
 ```
 
 ## Usage Instructions
-
-* Install packages outlined in `requirements.txt`:
+* This project is published on [PyPI](https://pypi.org/project/covidxai/). To install package, run:
 
   ```
-  pip3 install -r requirements.txt
+  pip install covidxai
   ```
 
 ## Outputs
