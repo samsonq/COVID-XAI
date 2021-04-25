@@ -3,6 +3,9 @@ import numpy as np
 import os
 import PIL.Image
 import shutil
+import innvestigate
+import innvestigate.utils as iutils
+import innvestigate.utils.visualizations as ivis
 
 
 ###############################################################################
@@ -118,3 +121,27 @@ def plot_image_grid(grid,
     else:
         print('Saving figure to {}'.format(file_name))
         plt.savefig(file_name, orientation='landscape', dpi=dpi)
+
+
+def postprocess(X):
+    X = X.copy()
+    X = iutils.postprocess_images(X)
+    return X
+
+
+def bk_proj(X):
+    return ivis.graymap(X)
+
+
+def heatmap(X):
+    return ivis.heatmap(X)
+
+
+def graymap(X):
+    return ivis.graymap(np.abs(X))
+
+
+# Scale to [0, 1] range for plotting.
+def input_postprocessing(X, revert_preprocessing):
+    #return revert_preprocessing(X)
+    return revert_preprocessing(X) / 255
