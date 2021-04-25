@@ -100,7 +100,7 @@ class ContrastiveLRP:
         titles = ["R", "R_dual", "CLRP"]
         self.plot_images(imgs, title, titles, save_path=save_path)
 
-    def CLRP(self, img, label, save_path):
+    def C_LRP(self, img, label, save_path):
         """
         Computes contrastive-LRP for model on inputted image.
         :param img: input image path
