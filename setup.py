@@ -31,10 +31,10 @@ except Exception as e:
 
 setup(
     name="covidxai",
-    version="0.1.0",
+    version="0.1.1",
     author="Samson Qian",
     author_email="samsonqian@gmail.com",
-    url="https://github.com/samsonq/COVID-LRP",
+    url="https://github.com/samsonq/COVID-XAI",
     license="MIT",
     description="Using XAI algorithms on Computer Vision models to explain predictions.",
     long_description=README,

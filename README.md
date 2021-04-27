@@ -21,12 +21,17 @@ An application can be created using the model and XAI algorithms on the back-end
 
 The project consists of these sections:
 ```
-COVID-LRP
+COVID-XAI
 ├── .gitignore
 ├── README.md
-├── data
 ├── covidxai
+├── data
+├── examples
+├── models
+├── notebooks
+├── outputs
 ├── references
+├── research
 ├── requirements.txt
 └── LICENSE
 ```
