@@ -15,29 +15,26 @@ class LayerwiseRelevancePropagation:
     """
     Layer-wise Relevance Propagation
     """
-    def __init__(self, model, images, batch_size, label_to_class_name,
-                 input_postprocessing=None):
+    def __init__(self, model, data_loader, batch_size, label_to_class_name):
         """
 
         :param model: trained model
-        :param images: image training set
+        :param data_loader: data loader object (image set, functions, etc.)
         :param batch_size: batch size to fit analyzer
         :param label_to_class_name: dictionary of label names
-        :param input_postprocessing: function to revert image preprocessing
         """
         self.model = model
+        self.data_loader = data_loader
         self.label_to_class_name = label_to_class_name
         self.methods = [
             # NAME, OPT.PARAMS, POSTPROC FUNC, TITLE
-            ("input", {}, input_postprocessing, "Input"),
+            ("input", {}, self.data_loader.preprocess[0], "Input"),
 
             # Signal
             ("deconvnet", {}, utils.bk_proj, "Deconvnet"),
             ("lrp.z", {}, utils.heatmap, "LRP-Z"),
             ("lrp.epsilon", {"epsilon": 1}, utils.heatmap, "LRP-Epsilon")
         ]
-
-        self.input_postprocessing = input_postprocessing
 
         # Create model without trailing softmax
         self.model_wo_softmax = iutils.keras.graph.model_wo_softmax(self.model)
@@ -49,10 +46,10 @@ class LayerwiseRelevancePropagation:
                                                     **method[1])  # optional analysis parameters
 
             # Some analyzers require training.
-            analyzer.fit(images, batch_size=batch_size, verbose=1)
+            analyzer.fit(self.data_loader.data[0], batch_size=batch_size, verbose=1)
             self.analyzers.append(analyzer)
 
-    def lrp_output(self, img, label, method="z", save_path=None):
+    def lrp(self, img, label, method="z", save_path=None):
         """
 
         :param img: input image path
@@ -91,13 +88,8 @@ class LayerwiseRelevancePropagation:
             # Store the analysis.
             analysis[0, aidx] = a[0]
 
-        if method == "z":
-            lrp = 2
-        elif method == "epsilon":
-            lrp = 3
-
         plt.figure()
-        plt.imshow(analysis[0][lrp])
+        plt.imshow(analysis[0][2 if method == "z" else 3])
         plt.title("Layer-wise Relevance Propagation {}".format(method))
         print("Predicted: {}".format(text[0][0]))
         print("Actual: {}".format(text[0][3]))
@@ -109,21 +101,18 @@ class LayerwiseRelevancePropagation:
 
         return text[0][0], text[0][3], text[0][1], text[0][2]
 
-    def lrp_comparison(model, img, save_path=None):
+    def lrp_comparison(self, img, save_path=None):
         """
 
-        :param model: trained model
         :param img: input image path
         :param save_path: explanation save path
         :return:
         """
         return
 
-
-    def lrp_image_set(model, images, save_path=None):
+    def lrp_image_set(self, images, save_path=None):
         """
 
-        :param model: trained model
         :param images: set of images to explain
         :param save_path: explanation save path
         :return:

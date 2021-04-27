@@ -4,6 +4,17 @@ import random
 import numpy as np
 from matplotlib import pyplot as plt
 import innvestigate
+import lime
+from lime import lime_image
+
+
+class ContrastiveLIME:
+    """
+    Contrastive Local Interpretable Model-agnostic Explanations.
+    """
+    def __init__(self, model):
+        self.model = model
+        self.explainer = lime_image.LimeImageExplainer()
 
 
 weights21= [i / 200 for i in range(1, 200)]
