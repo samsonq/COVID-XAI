@@ -31,9 +31,11 @@ except Exception as e:
 
 setup(
     name="covidxai",
-    version="0.1.1",
+    version="0.1.2",
     author="Samson Qian",
     author_email="samsonqian@gmail.com",
+    packages=["covidxai", "covidxai.explainability", "covidxai.model", "covidxai.explainability.gradcam",
+              "covidxai.explainability.lime", "covidxai.explainability.lrp"],
     url="https://github.com/samsonq/COVID-XAI",
     license="MIT",
     description="Using XAI algorithms on Computer Vision models to explain predictions.",
@@ -41,5 +43,5 @@ setup(
     long_description_content_type="text/markdown",
     install_requires=install_reqs,
     python_requires=">=3.6",
-    keywords="computer-vision explainable-ai lime lrp grad-cam covid-19 pneumonia-detection"
+    keywords="computer-vision explainable-ai lime torch_lrp grad-cam covid-19 pneumonia-detection"
 )
