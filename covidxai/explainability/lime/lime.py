@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from matplotlib import pyplot as plt
+from keras.models import load_model
 import lime
 from lime import lime_image
 from skimage.segmentation import mark_boundaries
@@ -11,7 +12,10 @@ class LIME:
     Local Interpretable Model-agnostic Explanations
     """
     def __init__(self, model, num_samples=1000):
-        self.model = model
+        if isinstance(model, str):
+            self.model = load_model(model)
+        else:
+            self.model = model
         self.num_samples = num_samples
         self.explainer = lime_image.LimeImageExplainer()
 
